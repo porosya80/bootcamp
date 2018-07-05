@@ -4,6 +4,11 @@ def draw_board(board):
 
 
 def game_init():
+    print(
+        """Крестики нолики
+            для выхода используйте CTRL+c
+            Поехали ..."""
+    )
     return [["." for x in range(3)] for y in range(3)], "O"
 
 
@@ -16,14 +21,21 @@ def add_board(board, coords, player):
 
 
 def check_board(board, player):
-    win = 0
-    res = 0
-    for pl in ["X", "O"]:
-        print(pl)
-        if any(x == pl for x in [column for column in board]):
-            print("found", pl)
+    win = ""
+    for pl in "XO":
+        for col in board:
+            if all(x == pl for x in col):
+                win = pl
+        for col in list(zip(*board)):
+            if all(x == pl for x in col):
+                win = pl
+        if board[0][0] == board[1][1] == board[2][2] == pl or board[2][0] == board[1][1] == board[0][2] == pl:
+            win = pl
 
-    return win, res, player
+    if sum(col.count(".") for col in board) == 0 and win == "":
+        win = "TIE !!!"
+
+    return win, "X" if player == "O" else "O"
 
 
 def validate_input(inp):
@@ -49,7 +61,10 @@ def main():
         # print(board)
         draw_board(board)
         input_board(board, player)
-        win, res, player = check_board(board, player)
+        win, player = check_board(board, player)
+        if win:
+            print(f"\n\n{win} выиграл\n\n") if win != "TIE !!!" else print(f"\n\nНичья\n\n")
+            board, player = game_init()
 
 
 if __name__ == "__main__":
